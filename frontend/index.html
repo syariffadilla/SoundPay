@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundPay - Soundness Layer DApps</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@mysten/sui.js@latest/dist/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1>🔊 SoundPay</h1>
+                <p>Powered by Soundness Layer</p>
+            </div>
+            <div class="wallet-section">
+                <button id="connectWallet" class="btn-primary">Connect Wallet</button>
+                <div id="walletInfo" class="wallet-info hidden">
+                    <span id="walletAddress"></span>
+                    <button id="disconnectWallet" class="btn-secondary">Disconnect</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="section">
+                <h2>Dashboard</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Payments</h3>
+                        <p id="totalPayments">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>ZK Proofs Generated</h3>
+                        <p id="totalProofs">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Walrus Storage Used</h3>
+                        <p id="storageUsed">0 MB</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Escrows</h3>
+                        <p id="activeEscrows">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Send Payment -->
+            <section id="sendPayment" class="section">
+                <h2>Send Payment</h2>
+                <div class="payment-form">
+                    <div class="form-group">
+                        <label>Recipient Address (Sui)</label>
+                        <input type="text" id="recipientAddress" placeholder="0x..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (SUI)</label>
+                        <input type="number" id="paymentAmount" placeholder="0.1" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="paymentDescription" placeholder="Payment description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="useEscrow" checked />
+                            Use Escrow Protection
+                        </label>
+                    </div>
+                    <button id="sendPaymentBtn" class="btn-primary">Generate ZK Proof & Send</button>
+                </div>
+
+                <!-- ZK Proof Status -->
+                <div id="proofStatus" class="proof-status hidden">
+                    <h3>ZK Proof Generation</h3>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <p id="proofMessage">Generating proof...</p>
+                    <div id="proofResult" class="proof-result hidden">
+                        <h4>✅ Proof Generated Successfully!</h4>
+                        <p><strong>Walrus Blob ID:</strong> <span id="blobId"></span></p>
+                        <p><strong>Soundness Attestation:</strong> <span id="attestationId"></span></p>
+                        <button id="shareProof" class="btn-secondary">Share on Twitter</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payment History -->
+            <section id="paymentHistory" class="section">
+                <h2>Payment History</h2>
+                <div class="filter-tabs">
+                    <button class="tab-btn active" data-filter="all">All</button>
+                    <button class="tab-btn" data-filter="pending">Pending</button>
+                    <button class="tab-btn" data-filter="completed">Completed</button>
+                    <button class="tab-btn" data-filter="disputed">Disputed</button>
+                </div>
+                <div id="paymentList" class="payment-list">
+                    <!-- Payment items will be loaded here -->
+                </div>
+            </section>
+
+            <!-- ZK Proof Explorer -->
+            <section id="proofExplorer" class="section">
+                <h2>ZK Proof Explorer</h2>
+                <div class="explorer-search">
+                    <input type="text" id="searchProof" placeholder="Search by Blob ID or Transaction Hash..." />
+                    <button id="searchBtn" class="btn-primary">Search</button>
+                </div>
+                <div id="proofDetails" class="proof-details hidden">
+                    <!-- Proof details will be shown here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                📊 Dashboard
+            </button>
+            <button class="nav-btn" data-section="sendPayment">
+                💸 Send
+            </button>
+            <button class="nav-btn" data-section="paymentHistory">
+                📋 History
+            </button>
+            <button class="nav-btn" data-section="proofExplorer">
+                🔍 Explorer
+            </button>
+        </nav>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Processing transaction...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
