@@ -1,23 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoundPay - Private Payments with Zero-Knowledge Proofs</title>
+    <title>SoundPay - Private DeFi Payments with zkProof</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --secondary: #10b981;
-            --dark: #1f2937;
-            --light: #f9fafb;
-            --gray: #6b7280;
-            --gray-light: #e5e7eb;
-            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            --card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            --transition: all 0.3s ease;
+            --accent: #f59e0b;
+            --neon: #00ffff;
+            --neon-pink: #ff0080;
+            --dark: #0a0a0f;
+            --dark-light: #1a1a2e;
+            --dark-card: #16213e;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --white: #ffffff;
+
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-neon: linear-gradient(135deg, #00ffff 0%, #ff0080 100%);
+            --gradient-dark: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            --gradient-card: linear-gradient(135deg, rgba(22, 33, 62, 0.8) 0%, rgba(26, 26, 46, 0.8) 100%);
+
+            --shadow-neon: 0 0 20px rgba(0, 255, 255, 0.3);
+            --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.4);
+
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         * {
@@ -28,58 +47,250 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            color: var(--dark);
+            background: var(--dark);
+            color: var(--white);
             line-height: 1.6;
             overflow-x: hidden;
-            background-color: #fdfdff;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Header & Navigation */
-        header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        /* Animated Background */
+        .animated-bg {
             position: fixed;
-            width: 100%;
             top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--gradient-dark);
+        }
+
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        .floating-orbs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gradient-neon);
+            opacity: 0.1;
+            animation: floatOrb 8s ease-in-out infinite;
+            filter: blur(1px);
+        }
+
+        .orb:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 20%;
+            animation-delay: 2s;
+        }
+
+        .orb:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 30%;
+            animation-delay: 4s;
+        }
+
+        @keyframes floatOrb {
+
+            0%,
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.1);
+            }
+        }
+
+        /* Particle System */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--neon);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: particleFloat 6s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: var(--primary);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            padding: 15px 0;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            transition: var(--transition);
+        }
+
+        header.scrolled {
+            background: rgba(10, 10, 15, 0.95);
+            box-shadow: var(--shadow-glow);
         }
 
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 20px 0;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 800;
-            font-size: 24px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 20px;
+            color: #fff;
+            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 25px;
+            list-style: none;
         }
 
         .nav-links a {
+            color: #fff;
             text-decoration: none;
-            color: var(--dark);
             font-weight: 500;
-            transition: var(--transition);
-            font-size: 16px;
+            transition: color 0.3s ease;
         }
 
         .nav-links a:hover {
@@ -87,141 +298,374 @@
         }
 
         .cta-button {
-            background: var(--gradient);
-            color: white;
-            padding: 12px 24px;
+            background: #7c5cff;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: #9d7cff;
+        }
+
+        /* Hamburger (mobile only) */
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+            background: none;
+            border: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 240px;
+            height: 100vh;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: left 0.3s ease-in-out;
+            z-index: 2000;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar a {
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary);
+        }
+
+        .sidebar .close-btn {
+            font-size: 28px;
+            color: #fff;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+
+            .nav-links,
+            .cta-button {
+                display: none;
+                /* hide menu + button on mobile */
+            }
+
+            .menu-toggle {
+                display: block;
+                /* show hamburger */
+            }
+        }
+
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 900;
+            font-size: 28px;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 32px;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 20px rgba(255, 0, 128, 0.5));
+            }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-neon);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+
+        .cta-button {
+            background: var(--gradient-primary);
+            color: var(--white);
+            padding: 12px 28px;
             border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             transition: var(--transition);
-            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
         }
 
         .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
         }
+
 
         /* Hero Section */
         .hero {
-            padding: 180px 0 100px;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e6e6ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-start;
+            /* biar konten ke kiri */
+            align-items: flex-start;
+            /* biar konten di atas */
             position: relative;
             overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(79, 70, 229, 0.1) 100%);
-            z-index: 1;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 400px;
-            height: 400px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-            z-index: 1;
+            padding: 120px 0 80px;
         }
 
         .hero-content {
-            max-width: 650px;
-            z-index: 2;
+            max-width: 700px;
+            z-index: 10;
             position: relative;
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--gray);
-            margin-bottom: 30px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 30px;
-        }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 25px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            animation: slideInLeft 1s ease-out;
         }
 
-        .trusted-by {
-            margin-top: 50px;
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--white) 0%, var(--neon) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInUp 1s ease-out 0.2s both;
         }
 
-        .trusted-by p {
-            font-size: 14px;
+        .hero-subtitle {
+            font-size: 1.5rem;
             color: var(--gray);
-            margin-bottom: 15px;
+            margin-bottom: 40px;
+            animation: slideInUp 1s ease-out 0.4s both;
         }
 
-        .trust-badges {
+        .hero-buttons {
             display: flex;
             gap: 20px;
-            align-items: center;
+            margin-bottom: 60px;
+            animation: slideInUp 1s ease-out 0.6s both;
         }
 
-        .trust-badge {
-            background: white;
-            padding: 10px 20px;
+        .btn-primary {
+            background: var(--gradient-neon);
+            color: var(--dark);
+            padding: 16px 32px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: var(--shadow-neon);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            animation: slideInUp 1s ease-out 0.8s both;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--gradient-card);
+            border-radius: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+            font-weight: 500;
         }
 
         /* Features Section */
         .features {
-            padding: 100px 0;
-            background: white;
+            padding: 120px 0;
+            position: relative;
         }
 
         .section-title {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+
+        .section-title.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .section-title h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .section-title p {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             color: var(--gray);
             max-width: 600px;
             margin: 0 auto;
@@ -229,282 +673,493 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
         }
 
         .feature-card {
-            background: white;
-            padding: 40px 30px;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
+            background: var(--gradient-card);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(20px);
             transition: var(--transition);
-            text-align: center;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transition: left 0.8s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-glow);
         }
 
         .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 16px;
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-neon);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            color: var(--primary);
-            font-size: 28px;
+            margin-bottom: 24px;
+            font-size: 32px;
+            color: var(--dark);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-icon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: var(--transition);
+            transform: translate(-50%, -50%);
+        }
+
+        .feature-card:hover .feature-icon::before {
+            width: 120px;
+            height: 120px;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .feature-card h3 {
             font-size: 1.5rem;
-            margin-bottom: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--white);
         }
 
         .feature-card p {
             color: var(--gray);
+            line-height: 1.6;
         }
 
         /* How It Works */
         .how-it-works {
-            padding: 100px 0;
-            background: var(--light);
+            padding: 120px 0;
+            background: rgba(22, 33, 62, 0.3);
+            position: relative;
+        }
+
+        .steps-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .steps-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--neon));
+            transform: translateY(-50%);
+            opacity: 0.3;
+        }
+
+        .steps-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: var(--gradient-neon);
+            animation: progressLine 4s ease-in-out infinite;
+        }
+
+        @keyframes progressLine {
+            0% {
+                width: 0;
+            }
+
+            50% {
+                width: 100%;
+            }
+
+            100% {
+                width: 0;
+            }
         }
 
         .steps {
-            display: flex;
-            justify-content: space-between;
-            max-width: 900px;
-            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
             position: relative;
+            z-index: 2;
         }
 
         .step {
             text-align: center;
-            width: 30%;
-            position: relative;
-            z-index: 2;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+
+        .step.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--gradient);
-            color: white;
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-neon);
+            color: var(--dark);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            margin: 0 auto 20px;
-            font-size: 18px;
-        }
-
-        .step-line {
-            position: absolute;
-            top: 25px;
-            left: 15%;
-            right: 15%;
-            height: 2px;
-            background: var(--gray-light);
-            z-index: 1;
-        }
-
-        /* Testimonials */
-        .testimonials {
-            padding: 100px 0;
-            background: white;
-        }
-
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .testimonial-card {
-            background: var(--light);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--card-shadow);
+            font-weight: 900;
+            font-size: 24px;
+            margin: 0 auto 24px;
+            transition: var(--transition);
             position: relative;
+            overflow: hidden;
         }
 
-        .testimonial-card::before {
-            content: '"';
+        .step-number::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 60px;
-            color: rgba(0, 0, 0, 0.05);
-            font-family: Georgia, serif;
-        }
-
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .author-avatar {
-            width: 50px;
-            height: 50px;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+            transition: var(--transition);
+            transform: translate(-50%, -50%);
+        }
+
+        .step:hover .step-number::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
             font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--white);
         }
 
-        /* Stats Section */
-        .stats {
-            padding: 80px 0;
-            background: var(--gradient);
-            color: white;
+        .step p {
+            color: var(--gray);
+            line-height: 1.6;
         }
 
-        .stats-grid {
+        /* Tech Stack */
+        .tech-stack {
+            padding: 120px 0;
+        }
+
+        .tech-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 30px;
+            margin-top: 60px;
+        }
+
+        .tech-item {
+            background: var(--gradient-card);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
             text-align: center;
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
         }
 
-        .stat-item h3 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
+        .tech-item.animate {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .stat-item p {
-            opacity: 0.9;
+        .tech-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .tech-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .tech-desc {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* Timeline */
+        .timeline {
+            padding: 120px 0;
+            background: rgba(22, 33, 62, 0.3);
+        }
+
+        .timeline-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gradient-neon);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+
+        .timeline-item.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--gradient-card);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            margin: 0 30px;
+            position: relative;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: var(--gradient-neon);
+            border-radius: 50%;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -40px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -40px;
+        }
+
+        .timeline-phase {
+            font-size: 14px;
+            color: var(--neon);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .timeline-desc {
+            color: var(--gray);
+            line-height: 1.6;
         }
 
         /* CTA Section */
         .cta-section {
-            padding: 100px 0;
-            background: white;
+            padding: 120px 0;
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .cta-content {
             text-align: center;
+            position: relative;
+            z-index: 2;
         }
 
         .cta-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 24px;
+            color: var(--white);
         }
 
         .cta-section p {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
             max-width: 600px;
-            margin: 0 auto 30px;
-            color: var(--gray);
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .cta-buttons {
             display: flex;
-            gap: 16px;
+            gap: 20px;
             justify-content: center;
         }
 
         .btn-white {
-            background: var(--gradient);
-            color: white;
-            padding: 12px 24px;
+            background: var(--white);
+            color: var(--dark);
+            padding: 16px 32px;
             border-radius: 12px;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
             transition: var(--transition);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .btn-white:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--primary);
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            border: 2px solid var(--primary);
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* FAQ Section */
-        .faq {
-            padding: 100px 0;
-            background: var(--light);
-        }
-
-        .faq-grid {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .faq-item {
-            margin-bottom: 20px;
-            border-radius: 12px;
-            background: white;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-        }
-
-        .faq-question {
-            padding: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .faq-answer {
-            padding: 0 20px 20px;
-            color: var(--gray);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         /* Footer */
         footer {
             background: var(--dark);
-            color: white;
             padding: 80px 0 40px;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
         }
 
         .footer-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
         }
 
-        .footer-column h3 {
-            font-size: 1.25rem;
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: var(--gradient-neon);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer-brand p {
+            color: var(--gray);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-link {
+            width: 48px;
+            height: 48px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-neon);
+            color: var(--dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .footer-column h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
             margin-bottom: 20px;
+            color: var(--white);
         }
 
         .footer-links {
@@ -516,122 +1171,131 @@
         }
 
         .footer-links a {
-            color: var(--gray-light);
+            color: var(--gray);
             text-decoration: none;
             transition: var(--transition);
         }
 
         .footer-links a:hover {
-            color: white;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: var(--transition);
-        }
-
-        .social-links a:hover {
-            background: var(--primary);
-            transform: translateY(-3px);
+            color: var(--white);
+            transform: translateX(5px);
         }
 
         .footer-bottom {
             text-align: center;
             padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gray-light);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                text-align: center;
-                gap: 15px;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-            }
-            
-            .trust-badges {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .steps {
-                flex-direction: column;
-                gap: 40px;
-            }
-            
-            .step {
-                width: 100%;
-            }
-            
-            .step-line {
-                display: none;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
+            color: var(--gray);
         }
 
         /* Animations */
-        @keyframes fadeIn {
+        @keyframes slideInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .animate-in {
-            animation: fadeIn 0.6s ease forwards;
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-line {
+                display: none;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
+
 <body>
-    <!-- Header & Navigation -->
-    <header>
-        <div class="container header-container">
-            <div class="logo">
-                <i class="fas fa-wave-square"></i>
-                <span>SoundPay</span>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loading-text">Initializing SoundPay...</div>
+    </div>
+
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="bg-grid"></div>
+        <div class="floating-orbs">
+            <div class="orb"></div>
+            <div class="orb"></div>
+            <div class="orb"></div>
+        </div>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-wave-square"></i>
+                    <span>SoundPay</span>
+                </a>
+                <nav>
+                    <ul class="nav-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#tech">Technology</a></li>
+                        <li><a href="#timeline">Roadmap</a></li>
+                    </ul>
+                </nav>
+                <a href="https://github.com/syariffadilla/SoundPay" class="cta-button" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
             </div>
-            <nav class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#use-cases">Use Cases</a>
-                <a href="#faq">FAQ</a>
-            </nav>
-            <a href="#app" class="cta-button">Launch App</a>
         </div>
     </header>
 
@@ -640,56 +1304,37 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    <i class="fas fa-shield-alt"></i> Powered by Soundness Layer
+                    <i class="fas fa-shield-alt"></i>
+                    Powered by Soundness Layer & zkProof
                 </div>
-                <h1>Private Payments with Zero-Knowledge Proofs</h1>
-                <p>SoundPay enables fast, low-cost, and private transactions by leveraging the power of Soundness Layer and Sui blockchain. Experience the future of decentralized payments with enhanced privacy and security.</p>
-                <div class="hero-buttons">
-                    <a href="#app" class="cta-button">
-                        <i class="fas fa-play"></i> Get Started
-                    </a>
-                    <a href="#how-it-works" class="btn-outline">
-                        <i class="fas fa-info-circle"></i> Learn More
-                    </a>
-                </div>
-                
-                <div class="trusted-by">
-                    <p>Trusted by developers and users worldwide</p>
-                    <div class="trust-badges">
-                        <div class="trust-badge">
-                            <i class="fas fa-check-circle"></i> Secure Transactions
-                        </div>
-                        <div class="trust-badge">
-                            <i class="fas fa-bolt"></i> Instant Settlements
-                        </div>
-                        <div class="trust-badge">
-                            <i class="fas fa-lock"></i> Privacy First
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                <h1>Private DeFi Payments with Zero-Knowledge Proofs</h1>
+                <p class="hero-subtitle">Ultra-low fees, private transactions, and secure escrow system built on
+                    Soundness Layer. Experience the future of decentralized payments.</p>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>100%</h3>
-                    <p>Private Transactions</p>
+                <div class="hero-buttons">
+                    <a href="https://github.com/syariffadilla/SoundPay" class="btn-primary" target="_blank">
+                        <i class="fas fa-rocket"></i>
+                        Launch App
+                    </a>
+                    <a href="#how-it-works" class="btn-secondary">
+                        <i class="fas fa-play"></i>
+                        See Demo
+                    </a>
                 </div>
-                <div class="stat-item">
-                    <h3>>$1M</h3>
-                    <p>Processed</p>
-                </div>
-                <div class="stat-item">
-                    <h3>99.9%</h3>
-                    <p>Uptime</p>
-                </div>
-                <div class="stat-item">
-                    <h3><1s</h3>
-                    <p>Transaction Time</p>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="100">0</div>
+                        <div class="stat-label">% Private</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="0.001">0</div>
+                        <div class="stat-label">$ Ultra-low Fees</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="1">0</div>
+                        <div class="stat-label">s Settlement</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -699,170 +1344,204 @@
     <section class="features" id="features">
         <div class="container">
             <div class="section-title">
-                <h2>Why Choose SoundPay?</h2>
-                <p>Next-generation payment platform focused on privacy and efficiency</p>
+                <h2>Revolutionary DeFi Features</h2>
+                <p>Built for privacy, security, and efficiency in the decentralized economy</p>
             </div>
+
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-user-shield"></i>
+                        <i class="fas fa-user-secret"></i>
                     </div>
-                    <h3>Complete Privacy</h3>
-                    <p>Your transactions are protected by zero-knowledge proofs, ensuring sensitive data is never exposed.</p>
+                    <h3>zkProof Privacy</h3>
+                    <p>Complete transaction privacy using zero-knowledge proofs. No sensitive data is ever revealed
+                        while maintaining full verifiability.</p>
                 </div>
+
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-coins"></i>
                     </div>
-                    <h3>Fast & Low-Cost</h3>
-                    <p>Built on Sui blockchain, SoundPay offers low-fee transactions and instant settlement.</p>
+                    <h3>Micro-transactions</h3>
+                    <p>Ultra-low fees enable micro-payments and small transactions that were previously uneconomical on
+                        traditional networks.</p>
                 </div>
+
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-lock"></i>
+                        <i class="fas fa-handshake"></i>
                     </div>
-                    <h3>Secure Escrow</h3>
-                    <p>On-chain escrow system protects both buyers and sellers, ensuring funds are only released when conditions are met.</p>
+                    <h3>Smart Escrow</h3>
+                    <p>On-chain escrow system protects both buyers and sellers. Funds are released only when predefined
+                        conditions are met.</p>
                 </div>
+
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3>Verifiable Proofs</h3>
-                    <p>Every transaction generates cryptographic proof that can be verified by anyone on the network.</p>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track your payment history with proof of authenticity. Complete transparency while maintaining
+                        privacy.</p>
                 </div>
+
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-database"></i>
                     </div>
-                    <h3>Decentralized Storage</h3>
-                    <p>Transaction data is stored on decentralized Walrus Storage, ensuring immutability and accessibility.</p>
+                    <h3>WALRUS Storage</h3>
+                    <p>Verifiable proofs stored on decentralized WALRUS storage, ensuring immutability and global
+                        accessibility.</p>
                 </div>
+
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-globe"></i>
+                        <i class="fas fa-bolt"></i>
                     </div>
-                    <h3>Global Access</h3>
-                    <p>Available to anyone, anywhere, without geographical restrictions or identification requirements.</p>
+                    <h3>Instant Settlement</h3>
+                    <p>Lightning-fast transactions with immediate finality. No waiting for confirmations or network
+                        congestion.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- How It Works -->
     <section class="how-it-works" id="how-it-works">
         <div class="container">
             <div class="section-title">
                 <h2>How SoundPay Works</h2>
-                <p>Simple process for complex technology behind the scenes</p>
+                <p>Simple interface, powerful technology underneath</p>
             </div>
-            <div class="steps">
-                <div class="step-line"></div>
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Initiate Payment</h3>
-                    <p>User starts a payment by specifying amount and recipient</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Generate ZK-Proof</h3>
-                    <p>SoundPay generates zero-knowledge proof for transaction validation</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Execute & Store</h3>
-                    <p>Transaction executes on Sui blockchain and proof is stored on Walrus</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Use Cases Section -->
-    <section class="testimonials" id="use-cases">
-        <div class="container">
-            <div class="section-title">
-                <h2>Use SoundPay For</h2>
-                <p>Various everyday payment scenarios with guaranteed privacy</p>
-            </div>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "As a freelancer, SoundPay makes it easy to receive international payments without high fees and with complete privacy."
+            <div class="steps-container">
+                <div class="steps-line"></div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Initiate Payment</h3>
+                        <p>User creates a payment request with amount, recipient, and optional escrow conditions through
+                            our intuitive interface.</p>
                     </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">F</div>
-                        <div>
-                            <strong>Freelancer</strong>
-                            <p>Independent Worker</p>
-                        </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Generate zkProof</h3>
+                        <p>Soundness Layer generates zero-knowledge proof for transaction validation without revealing
+                            sensitive details.</p>
                     </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "As an online merchant, SoundPay gives me verifiable payment proofs and reduces transaction costs significantly."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">M</div>
-                        <div>
-                            <strong>Merchant</strong>
-                            <p>Online Store Owner</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "As a regular user, I can finally make micro-transactions without worrying about my data being misused."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">P</div>
-                        <div>
-                            <strong>User</strong>
-                            <p>Individual</p>
-                        </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Execute & Store</h3>
+                        <p>Transaction executes on blockchain with proof stored on WALRUS. Instant settlement with full
+                            verifiability.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="faq" id="faq">
+    <!-- Tech Stack -->
+    <section class="tech-stack" id="tech">
         <div class="container">
             <div class="section-title">
-                <h2>Frequently Asked Questions</h2>
-                <p>Everything you need to know about SoundPay</p>
+                <h2>Cutting-Edge Technology Stack</h2>
+                <p>Built with the most advanced blockchain and web technologies</p>
             </div>
-            <div class="faq-grid">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        What is SoundPay? <i class="fas fa-chevron-down"></i>
+
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fab fa-react"></i>
                     </div>
-                    <div class="faq-answer">
-                        SoundPay is a decentralized payment platform that uses zero-knowledge proofs and blockchain technology to enable private, fast, and low-cost transactions.
+                    <div class="tech-name">React + Wagmi</div>
+                    <div class="tech-desc">Modern frontend with Web3 integration</div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fab fa-node-js"></i>
+                    </div>
+                    <div class="tech-name">Node.js + Express</div>
+                    <div class="tech-desc">Scalable backend infrastructure</div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <div class="tech-name">Soundness Layer</div>
+                    <div class="tech-desc">Zero-knowledge proof generation</div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="tech-name">WALRUS Storage</div>
+                    <div class="tech-desc">Decentralized proof storage</div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="tech-name">Smart Contracts</div>
+                    <div class="tech-desc">Automated escrow & payments</div>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="tech-name">Tailwind CSS</div>
+                    <div class="tech-desc">Beautiful, responsive design</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline" id="timeline">
+        <div class="container">
+            <div class="section-title">
+                <h2>Development Roadmap</h2>
+                <p>Our journey to revolutionize DeFi payments</p>
+            </div>
+
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-phase">PoC (2-4 weeks)</div>
+                        <div class="timeline-title">Proof of Concept</div>
+                        <div class="timeline-desc">
+                            Basic private transaction via Soundness Layer, simple escrow smart contract, and basic
+                            wallet UI for users.
+                        </div>
                     </div>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        How does SoundPay ensure privacy? <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        SoundPay uses zero-knowledge proofs (ZK-proofs) to validate transactions without revealing any sensitive information about the parties involved or the transaction details.
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        What blockchain does SoundPay use? <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        SoundPay is built on the Sui blockchain, known for its high throughput, low latency, and secure environment for decentralized applications.
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-phase">MVP (4-8 weeks)</div>
+                        <div class="timeline-title">Minimum Viable Product</div>
+                        <div class="timeline-desc">
+                            Full-featured escrow system, dashboard for history & proof explorer, production-ready
+                            deployment, and user testing & feedback.
+                        </div>
                     </div>
                 </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        Is SoundPay secure? <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        Yes, SoundPay utilizes advanced cryptographic techniques and blockchain technology to ensure the highest level of security for all transactions.
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-phase">Future</div>
+                        <div class="timeline-title">Advanced Features</div>
+                        <div class="timeline-desc">
+                            Multi-chain support, advanced analytics, mobile app, and enterprise integrations.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -870,17 +1549,23 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section" id="app">
+    <section class="cta-section">
         <div class="container">
-            <h2>Ready to Start Your Private Payment Journey?</h2>
-            <p>Join the revolution of secure, fast, and affordable private payments</p>
-            <div class="cta-buttons">
-                <a href="#" class="btn-white">
-                    <i class="fas fa-play"></i> Launch App
-                </a>
-                <a href="#" class="btn-outline">
-                    <i class="fas fa-file-alt"></i> Read Documentation
-                </a>
+            <div class="cta-content">
+                <h2>Ready to Experience Private DeFi?</h2>
+                <p>Join the revolution of secure, private, and efficient decentralized payments. Built by developers,
+                    for the community.</p>
+
+                <div class="cta-buttons">
+                    <a href="https://github.com/syariffadilla/SoundPay" class="btn-white" target="_blank">
+                        <i class="fab fa-github"></i>
+                        View Source Code
+                    </a>
+                    <a href="mailto:syariffadilla72@gmail.com" class="btn-secondary">
+                        <i class="fas fa-envelope"></i>
+                        Contact Developer
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -889,82 +1574,112 @@
     <footer>
         <div class="container">
             <div class="footer-grid">
-                <div class="footer-column">
+                <div class="footer-brand">
                     <h3>SoundPay</h3>
-                    <p>Decentralized payment platform focused on privacy and efficiency.</p>
+                    <p>Revolutionizing DeFi payments with zero-knowledge proofs and ultra-low fees. Built on Soundness
+                        Layer for maximum privacy and security.</p>
+
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="https://github.com/syariffadilla" class="social-link" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://discord.com/users/952511302994108417" class="social-link" target="_blank">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://t.me/rif11234" class="social-link" target="_blank">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="mailto:syariffadilla72@gmail.com" class="social-link">
+                            <i class="fas fa-envelope"></i>
+                        </a>
                     </div>
                 </div>
+
                 <div class="footer-column">
-                    <h3>Product</h3>
+                    <h4>Product</h4>
                     <ul class="footer-links">
-                        <li><a href="#">Features</a></li>
-                        <li><a href="#">How It Works</a></li>
-                        <li><a href="#">Use Cases</a></li>
-                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#tech">Technology</a></li>
+                        <li><a href="#timeline">Roadmap</a></li>
                     </ul>
                 </div>
+
                 <div class="footer-column">
-                    <h3>Resources</h3>
+                    <h4>Developer</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/syariffadilla" target="_blank">GitHub Profile</a></li>
+                        <li><a href="https://github.com/syariffadilla/SoundPay" target="_blank">Source Code</a></li>
+                        <li><a href="mailto:syariffadilla72@gmail.com">Contact</a></li>
+                        <li><a href="https://discord.com/users/952511302994108417" target="_blank">Discord</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Resources</h4>
                     <ul class="footer-links">
                         <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
                         <li><a href="#">Whitepaper</a></li>
-                        <li><a href="#">API</a></li>
-                        <li><a href="#">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Community</a></li>
                     </ul>
                 </div>
             </div>
+
             <div class="footer-bottom">
-                <p>&copy; 2023 SoundPay. All rights reserved. Built with Sui Blockchain and Soundness Layer.</p>
+                <p>&copy; 2025 SoundPay by Syarif Fadilla. Built with ❤️ for the DeFi community.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 2000);
+        });
+
+        // Create Particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 100;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth Scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
                     });
                 }
             });
         });
 
-        // FAQ toggle functionality
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', () => {
-                const answer = question.nextElementSibling;
-                const icon = question.querySelector('i');
-                
-                answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
-                icon.classList.toggle('fa-chevron-down');
-                icon.classList.toggle('fa-chevron-up');
-            });
-        });
-
-        // Simple animation on scroll
+        // Intersection Observer for Animations
         const observerOptions = {
             root: null,
             rootMargin: '0px',
@@ -972,16 +1687,110 @@
         };
 
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
+                    setTimeout(() => {
+                        entry.target.classList.add('animate');
+                    }, index * 100);
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.feature-card, .step, .testimonial-card, .stat-item').forEach(el => {
+        // Observe elements
+        document.querySelectorAll('.feature-card, .step, .tech-item, .timeline-item, .section-title').forEach(el => {
             observer.observe(el);
+        });
+
+        // Counter Animation
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start * 100) / 100;
+                }
+            }, 16);
+        }
+
+        // Stats Animation
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target.querySelector('.stat-number');
+                    const target = parseFloat(counter.getAttribute('data-count'));
+                    animateCounter(counter, target);
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        });
+
+        document.querySelectorAll('.stat-item').forEach(stat => {
+            statsObserver.observe(stat);
+        });
+
+        // 3D Card Effect
+        document.querySelectorAll('.feature-card, .tech-item').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+
+        // Initialize
+        createParticles();
+
+        // Typing Effect for Hero Title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+
+            type();
+        }
+
+        // Start typing effect after loading
+        setTimeout(() => {
+            const heroTitle = document.querySelector('.hero h1');
+            const originalText = heroTitle.textContent;
+            typeWriter(heroTitle, originalText, 80);
+        }, 2500);
+
+        // Parallax Effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.hero');
+            const speed = scrolled * 0.3;
+
+            if (parallax) {
+                parallax.style.transform = `translateY(${speed}px)`;
+            }
         });
     </script>
 </body>
+
 </html>
