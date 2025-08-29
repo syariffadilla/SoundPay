@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-const { exec } = require('child_process');
 const path = require('path');
 require('dotenv').config();
 
@@ -95,7 +94,6 @@ app.post('/api/upload-walrus', async (req, res) => {
         console.log('🐋 Uploading to Walrus...');
         
         // Simulate Walrus upload
-        // In production, use actual Walrus API
         const blobId = '0x' + crypto.randomBytes(32).toString('hex');
         const size = JSON.stringify(data).length;
         
@@ -128,15 +126,7 @@ app.post('/api/submit-soundness', async (req, res) => {
         console.log('📜 Submitting to Soundness Layer...');
         
         // Simulate Soundness Layer submission
-        // In production, use actual Soundness CLI
         const attestationId = '0x' + crypto.randomBytes(32).toString('hex');
-        
-        // Simulate CLI command execution
-        const command = `soundness-cli submit --blob-id ${blobId} --key my-key`;
-        console.log('Executing:', command);
-        
-        // In production, you would actually execute:
-        // await execSoundnessCLI(blobId, walletAddress);
         
         console.log('✅ Submitted to Soundness Layer:', attestationId);
         
@@ -155,29 +145,6 @@ app.post('/api/submit-soundness', async (req, res) => {
         });
     }
 });
-
-// Execute Soundness CLI (helper function)
-async function execSoundnessCLI(blobId, walletAddress) {
-    return new Promise((resolve, reject) => {
-        const cliPath = path.join(__dirname, '../soundness-cli');
-        const command = `cd ${cliPath} && docker compose run --rm soundness-cli submit --blob-id ${blobId} --key my-key`;
-        
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error('CLI execution error:', error);
-                reject(error);
-                return;
-            }
-            
-            console.log('CLI output:', stdout);
-            if (stderr) {
-                console.error('CLI stderr:', stderr);
-            }
-            
-            resolve(stdout);
-        });
-    });
-}
 
 // Get user payments
 app.get('/api/payments/:address', (req, res) => {
@@ -254,38 +221,6 @@ app.put('/api/payments/:id', (req, res) => {
     } catch (error) {
         console.error('Error updating payment:', error);
         res.status(500).json({ error: 'Failed to update payment' });
-    }
-});
-
-// Health check for Soundness Layer
-app.get('/api/soundness/health', async (req, res) => {
-    try {
-        // Check if Soundness CLI is available
-        const cliPath = path.join(__dirname, '../soundness-cli');
-        const command = `cd ${cliPath} && docker compose run --rm soundness-cli --help`;
-        
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                res.status(500).json({ 
-                    status: 'error', 
-                    message: 'Soundness CLI not available',
-                    error: error.message 
-                });
-                return;
-            }
-            
-            res.json({ 
-                status: 'ok', 
-                message: 'Soundness Layer is available',
-                cli_output: stdout.substring(0, 200) + '...'
-            });
-        });
-        
-    } catch (error) {
-        res.status(500).json({ 
-            status: 'error', 
-            message: 'Failed to check Soundness Layer health' 
-        });
     }
 });
 

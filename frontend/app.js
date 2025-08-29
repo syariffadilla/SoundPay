@@ -16,14 +16,14 @@ class SoundPayApp {
         // Initialize Sui client
         this.initSuiClient();
         
+        // Check for wallet availability
+        await this.checkWalletAvailability();
+        
         // Setup event listeners
         this.setupEventListeners();
         
         // Load initial data
         await this.loadDashboardData();
-        
-        // Show dashboard by default
-        this.showSection('dashboard');
         
         console.log('✅ SoundPay DApp initialized successfully!');
     }
@@ -31,13 +31,58 @@ class SoundPayApp {
     initSuiClient() {
         try {
             // Initialize Sui client for testnet
-            this.suiClient = new window.SuiClient({
+            this.suiClient = new window.sui.SuiClient({
                 url: CONFIG.SUI_RPC_URL
             });
             console.log('✅ Sui client initialized');
         } catch (error) {
             console.error('❌ Failed to initialize Sui client:', error);
         }
+    }
+
+    async checkWalletAvailability() {
+        const availableWallets = await this.checkAvailableWallets();
+        if (availableWallets.length === 0) {
+            this.showWalletInstallPrompt();
+        } else {
+            console.log('✅ Wallet detected:', availableWallets.map(w => w.name).join(', '));
+        }
+    }
+
+    async checkAvailableWallets() {
+        const wallets = [];
+        const checks = [
+            { name: 'Sui Wallet', condition: () => typeof window.suiWallet !== 'undefined', object: window.suiWallet },
+            { name: 'Sui', condition: () => typeof window.sui !== 'undefined', object: window.sui },
+            { name: 'Martian', condition: () => typeof window.martian !== 'undefined' && window.martian.sui, object: window.martian },
+        ];
+        
+        // Check for Chrome extension
+        if (typeof chrome !== 'undefined' && chrome.runtime) {
+            try {
+                await chrome.runtime.sendMessage('ppcguiplghgbkfbbdklghmhjjblefiao', { type: 'ping' });
+                wallets.push({ name: 'Sui Wallet Extension', object: null });
+            } catch (e) {
+                // Extension not installed or not responding
+            }
+        }
+        
+        checks.forEach(check => {
+            if (check.condition()) {
+                wallets.push({ name: check.name, object: check.object });
+            }
+        });
+        
+        return wallets;
+    }
+
+    showWalletInstallPrompt() {
+        const prompt = document.getElementById('walletPrompt');
+        prompt.classList.remove('hidden');
+        
+        document.getElementById('closePrompt').addEventListener('click', () => {
+            prompt.classList.add('hidden');
+        });
     }
 
     setupEventListeners() {
@@ -83,16 +128,20 @@ class SoundPayApp {
         try {
             console.log('🔗 Connecting wallet...');
             
-            // Check if Sui wallet is available
-            if (typeof window.suiWallet === 'undefined') {
-                alert('Please install Sui Wallet extension');
+            // Check for available wallets
+            const availableWallets = await this.checkAvailableWallets();
+            if (availableWallets.length === 0) {
+                this.showWalletInstallPrompt();
                 return;
             }
             
+            // Use the first available wallet
+            const wallet = availableWallets[0].object;
+            
             // Request connection
-            const result = await window.suiWallet.requestPermissions();
+            const result = await wallet.requestPermissions();
             if (result.granted) {
-                this.wallet = await window.suiWallet.getAccounts();
+                this.wallet = await wallet.getAccounts();
                 const address = this.wallet[0];
                 
                 // Update UI
@@ -100,6 +149,9 @@ class SoundPayApp {
                 document.getElementById('walletInfo').classList.remove('hidden');
                 document.getElementById('walletAddress').textContent = 
                     `${address.slice(0, 6)}...${address.slice(-4)}`;
+                
+                // Hide wallet prompt if shown
+                document.getElementById('walletPrompt').classList.add('hidden');
                 
                 console.log('✅ Wallet connected:', address);
                 

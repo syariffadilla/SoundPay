@@ -3,47 +3,526 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoundPay - Soundness Layer DApps</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SoundPay - Private Payments with Soundness Layer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@mysten/sui.js@latest/dist/index.js"></script>
+    <style>
+        /* CSS styles tetap sama seperti sebelumnya */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gray: #6b7280;
+            --gray-light: #e5e7eb;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6e6ff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--gray-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-light);
+        }
+
+        /* Wallet Info */
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        #walletAddress {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        /* Navigation */
+        .content-nav {
+            display: flex;
+            background: white;
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 14px 20px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            color: var(--gray);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: var(--gray-light);
+        }
+
+        /* Section Styles */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            color: var(--gray);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .stat-card p {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Form Styles */
+        .payment-form {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Proof Status */
+        .proof-status {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--gray-light);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .proof-result {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Payment List */
+        .payment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .payment-item {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .payment-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .payment-amount {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .payment-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-disputed {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Wallet Prompt */
+        .wallet-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .wallet-prompt-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .wallet-prompt-content h3 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: var(--dark);
+        }
+
+        .wallet-prompt-content p {
+            color: var(--gray);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .wallet-options {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--gray-light);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .content-nav {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wallet-options {
+                flex-direction: column;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header class="header">
             <div class="logo">
-                <h1>🔊 SoundPay</h1>
-                <p>Powered by Soundness Layer</p>
+                <div>
+                    <h1>🔊 SoundPay</h1>
+                    <p>Powered by Soundness Layer</p>
+                </div>
             </div>
             <div class="wallet-section">
-                <button id="connectWallet" class="btn-primary">Connect Wallet</button>
+                <button id="connectWallet" class="btn btn-primary">
+                    <i class="fas fa-wallet"></i> Connect Wallet
+                </button>
                 <div id="walletInfo" class="wallet-info hidden">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
                     <span id="walletAddress"></span>
-                    <button id="disconnectWallet" class="btn-secondary">Disconnect</button>
+                    <button id="disconnectWallet" class="btn btn-secondary">Disconnect</button>
                 </div>
             </div>
         </header>
 
+        <!-- Wallet Install Prompt -->
+        <div id="walletPrompt" class="wallet-prompt hidden">
+            <div class="wallet-prompt-content">
+                <h3><i class="fas fa-exclamation-circle"></i> Wallet Tidak Ditemukan</h3>
+                <p>Untuk menggunakan SoundPay, Anda perlu menginstall Sui Wallet extension.</p>
+                <div class="wallet-options">
+                    <a href="https://chrome.google.com/webstore/detail/sui-wallet/ppcguiplghgbkfbbdklghmhjjblefiao" 
+                       target="_blank" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Install Sui Wallet
+                    </a>
+                    <button id="closePrompt" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Navigation Tabs -->
+            <nav class="content-nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </button>
+                <button class="nav-btn" data-section="sendPayment">
+                    <i class="fas fa-paper-plane"></i> Send Payment
+                </button>
+                <button class="nav-btn" data-section="paymentHistory">
+                    <i class="fas fa-history"></i> Payment History
+                </button>
+                <button class="nav-btn" data-section="proofExplorer">
+                    <i class="fas fa-search"></i> Proof Explorer
+                </button>
+            </nav>
+
             <!-- Dashboard -->
-            <section id="dashboard" class="section">
+            <section id="dashboard" class="section active">
                 <h2>Dashboard</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>Total Payments</h3>
+                        <h3><i class="fas fa-exchange-alt"></i> Total Payments</h3>
                         <p id="totalPayments">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>ZK Proofs Generated</h3>
+                        <h3><i class="fas fa-shield-alt"></i> ZK Proofs Generated</h3>
                         <p id="totalProofs">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Walrus Storage Used</h3>
+                        <h3><i class="fas fa-database"></i> Walrus Storage Used</h3>
                         <p id="storageUsed">0 MB</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Active Escrows</h3>
+                        <h3><i class="fas fa-lock"></i> Active Escrows</h3>
                         <p id="activeEscrows">0</p>
                     </div>
                 </div>
@@ -54,38 +533,42 @@
                 <h2>Send Payment</h2>
                 <div class="payment-form">
                     <div class="form-group">
-                        <label>Recipient Address (Sui)</label>
+                        <label for="recipientAddress"><i class="fas fa-user"></i> Recipient Address (Sui)</label>
                         <input type="text" id="recipientAddress" placeholder="0x..." />
                     </div>
                     <div class="form-group">
-                        <label>Amount (SUI)</label>
+                        <label for="paymentAmount"><i class="fas fa-coins"></i> Amount (SUI)</label>
                         <input type="number" id="paymentAmount" placeholder="0.1" step="0.01" />
                     </div>
                     <div class="form-group">
-                        <label>Description</label>
+                        <label for="paymentDescription"><i class="fas fa-file-alt"></i> Description</label>
                         <textarea id="paymentDescription" placeholder="Payment description..."></textarea>
                     </div>
                     <div class="form-group">
                         <label>
                             <input type="checkbox" id="useEscrow" checked />
-                            Use Escrow Protection
+                            <i class="fas fa-lock"></i> Use Escrow Protection
                         </label>
                     </div>
-                    <button id="sendPaymentBtn" class="btn-primary">Generate ZK Proof & Send</button>
+                    <button id="sendPaymentBtn" class="btn btn-primary">
+                        <i class="fas fa-shield-alt"></i> Generate ZK Proof & Send
+                    </button>
                 </div>
 
                 <!-- ZK Proof Status -->
                 <div id="proofStatus" class="proof-status hidden">
-                    <h3>ZK Proof Generation</h3>
+                    <h3><i class="fas fa-cog fa-spin"></i> ZK Proof Generation</h3>
                     <div class="progress-bar">
                         <div id="progressFill" class="progress-fill"></div>
                     </div>
                     <p id="proofMessage">Generating proof...</p>
                     <div id="proofResult" class="proof-result hidden">
-                        <h4>✅ Proof Generated Successfully!</h4>
+                        <h4><i class="fas fa-check-circle"></i> Proof Generated Successfully!</h4>
                         <p><strong>Walrus Blob ID:</strong> <span id="blobId"></span></p>
                         <p><strong>Soundness Attestation:</strong> <span id="attestationId"></span></p>
-                        <button id="shareProof" class="btn-secondary">Share on Twitter</button>
+                        <button id="shareProof" class="btn btn-secondary">
+                            <i class="fab fa-twitter"></i> Share on Twitter
+                        </button>
                     </div>
                 </div>
             </section>
@@ -109,29 +592,13 @@
                 <h2>ZK Proof Explorer</h2>
                 <div class="explorer-search">
                     <input type="text" id="searchProof" placeholder="Search by Blob ID or Transaction Hash..." />
-                    <button id="searchBtn" class="btn-primary">Search</button>
+                    <button id="searchBtn" class="btn btn-primary">Search</button>
                 </div>
                 <div id="proofDetails" class="proof-details hidden">
                     <!-- Proof details will be shown here -->
                 </div>
             </section>
         </main>
-
-        <!-- Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" data-section="dashboard">
-                📊 Dashboard
-            </button>
-            <button class="nav-btn" data-section="sendPayment">
-                💸 Send
-            </button>
-            <button class="nav-btn" data-section="paymentHistory">
-                📋 History
-            </button>
-            <button class="nav-btn" data-section="proofExplorer">
-                🔍 Explorer
-            </button>
-        </nav>
     </div>
 
     <!-- Loading Overlay -->
@@ -140,8 +607,773 @@
         <p>Processing transaction...</p>
     </div>
 
-    <!-- Scripts -->
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Soundness Layer Configuration
+        const CONFIG = {
+            SUI_NETWORK: 'testnet',
+            SUI_RPC_URL: 'https://fullnode.testnet.sui.io:443',
+            SOUNDNESS_API_URL: 'http://localhost:3001/api'
+        };
+
+        // SoundPay DApp Main Application
+        class SoundPayApp {
+            constructor() {
+                this.wallet = null;
+                this.suiClient = null;
+                this.currentSection = 'dashboard';
+                this.payments = [];
+                this.proofs = [];
+                
+                this.init();
+            }
+
+            async init() {
+                console.log('🚀 Initializing SoundPay DApp...');
+                
+                // Initialize Sui client
+                this.initSuiClient();
+                
+                // Check for wallet availability
+                await this.checkWalletAvailability();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Load initial data
+                await this.loadDashboardData();
+                
+                console.log('✅ SoundPay DApp initialized successfully!');
+            }
+
+            initSuiClient() {
+                try {
+                    // Initialize Sui client for testnet
+                    if (window.sui) {
+                        this.suiClient = new window.sui.SuiClient({
+                            url: CONFIG.SUI_RPC_URL
+                        });
+                        console.log('✅ Sui client initialized');
+                    } else {
+                        console.warn('Sui client not available');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to initialize Sui client:', error);
+                }
+            }
+
+            async checkWalletAvailability() {
+                const availableWallets = await this.checkAvailableWallets();
+                if (availableWallets.length === 0) {
+                    this.showWalletInstallPrompt();
+                } else {
+                    console.log('✅ Wallet detected:', availableWallets.map(w => w.name).join(', '));
+                    // Auto-connect if wallet is available
+                    this.connectWallet();
+                }
+            }
+
+            async checkAvailableWallets() {
+                const wallets = [];
+                
+                // Check for various wallet objects with more specific detection
+                if (typeof window.suiWallet !== 'undefined' && window.suiWallet.hasOwnProperty('getAccounts')) {
+                    wallets.push({ name: 'Sui Wallet', object: window.suiWallet });
+                }
+                
+                if (typeof window.sui !== 'undefined' && window.sui.hasOwnProperty('getAccounts')) {
+                    wallets.push({ name: 'Sui', object: window.sui });
+                }
+                
+                if (typeof window.martian !== 'undefined' && window.martian.sui && window.martian.sui.hasOwnProperty('getAccounts')) {
+                    wallets.push({ name: 'Martian Sui', object: window.martian.sui });
+                }
+                
+                // Check for Ethereum-based wallets that might support Sui
+                if (typeof window.ethereum !== 'undefined') {
+                    // Check if it's a Sui-compatible wallet
+                    try {
+                        // Try to detect Sui wallets that use the Ethereum provider interface
+                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                        if (accounts && accounts.length > 0) {
+                            wallets.push({ name: 'Ethereum Wallet (Sui Compatible)', object: window.ethereum });
+                        }
+                    } catch (e) {
+                        console.log('Ethereum provider detected but not Sui compatible');
+                    }
+                }
+                
+                // Check for Chrome extension with more reliable method
+                if (typeof chrome !== 'undefined' && chrome.runtime) {
+                    try {
+                        // Try to detect the Sui Wallet extension directly
+                        const extensionId = 'ppcguiplghgbkfbbdklghmhjjblefiao';
+                        const manifest = await new Promise((resolve) => {
+                            chrome.runtime.sendMessage(extensionId, { type: 'ping' }, (response) => {
+                                if (chrome.runtime.lastError) {
+                                    resolve(null);
+                                } else {
+                                    resolve(response);
+                                }
+                            });
+                        });
+                        
+                        if (manifest) {
+                            wallets.push({ name: 'Sui Wallet Extension', object: null });
+                        }
+                    } catch (e) {
+                        console.log('Sui Wallet extension not detected');
+                    }
+                }
+                
+                return wallets;
+            }
+
+            showWalletInstallPrompt() {
+                const prompt = document.getElementById('walletPrompt');
+                prompt.classList.remove('hidden');
+                
+                document.getElementById('closePrompt').addEventListener('click', () => {
+                    prompt.classList.add('hidden');
+                });
+            }
+
+            setupEventListeners() {
+                // Wallet connection
+                document.getElementById('connectWallet').addEventListener('click', () => this.connectWallet());
+                document.getElementById('disconnectWallet').addEventListener('click', () => this.disconnectWallet());
+                
+                // Navigation
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const section = e.target.dataset.section;
+                        this.showSection(section);
+                    });
+                });
+                
+                // Send payment
+                document.getElementById('sendPaymentBtn').addEventListener('click', () => this.sendPayment());
+                
+                // Filter tabs
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const filter = e.target.dataset.filter;
+                        this.filterPayments(filter);
+                        
+                        // Update active tab
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
+                
+                // Proof search
+                document.getElementById('searchBtn').addEventListener('click', () => this.searchProof());
+                
+                // Share proof
+                document.addEventListener('click', (e) => {
+                    if (e.target.id === 'shareProof') {
+                        this.shareProofOnTwitter();
+                    }
+                });
+            }
+
+            async connectWallet() {
+                try {
+                    console.log('🔗 Connecting wallet...');
+                    
+                    // Check for available wallets
+                    const availableWallets = await this.checkAvailableWallets();
+                    if (availableWallets.length === 0) {
+                        this.showWalletInstallPrompt();
+                        return;
+                    }
+                    
+                    let accounts = [];
+                    let walletObj = availableWallets[0].object;
+                    
+                    // Try multiple methods to connect to wallet
+                    if (walletObj && walletObj.request) {
+                        // Modern EIP-1193 style
+                        accounts = await walletObj.request({ method: 'eth_requestAccounts' });
+                    } else if (walletObj && walletObj.enable) {
+                        // Legacy style
+                        accounts = await walletObj.enable();
+                    } else if (walletObj && walletObj.requestPermissions) {
+                        // Sui wallet style
+                        const result = await walletObj.requestPermissions();
+                        if (result.granted) {
+                            accounts = await walletObj.getAccounts();
+                        }
+                    } else if (walletObj && walletObj.getAccounts) {
+                        // Direct getAccounts
+                        accounts = await walletObj.getAccounts();
+                    } else if (typeof window.ethereum !== 'undefined') {
+                        // Fallback to Ethereum provider
+                        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    }
+                    
+                    if (accounts && accounts.length > 0) {
+                        this.wallet = accounts;
+                        const address = accounts[0];
+                        
+                        // Update UI
+                        document.getElementById('connectWallet').classList.add('hidden');
+                        document.getElementById('walletInfo').classList.remove('hidden');
+                        document.getElementById('walletAddress').textContent = 
+                            `${address.slice(0, 6)}...${address.slice(-4)}`;
+                        
+                        // Hide wallet prompt if shown
+                        document.getElementById('walletPrompt').classList.add('hidden');
+                        
+                        console.log('✅ Wallet connected:', address);
+                        
+                        // Load user data
+                        await this.loadUserData();
+                    } else {
+                        alert('No accounts found. Please make sure your wallet is unlocked.');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to connect wallet:', error);
+                    alert('Failed to connect wallet. Please try again. Error: ' + error.message);
+                }
+            }
+
+            disconnectWallet() {
+                this.wallet = null;
+                
+                // Update UI
+                document.getElementById('connectWallet').classList.remove('hidden');
+                document.getElementById('walletInfo').classList.add('hidden');
+                
+                console.log('🔌 Wallet disconnected');
+            }
+
+            showSection(sectionName) {
+                // Hide all sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected section
+                document.getElementById(sectionName).classList.add('active');
+                
+                // Update navigation
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+                
+                this.currentSection = sectionName;
+                
+                // Load section-specific data
+                this.loadSectionData(sectionName);
+            }
+
+            async loadSectionData(sectionName) {
+                switch (sectionName) {
+                    case 'dashboard':
+                        await this.loadDashboardData();
+                        break;
+                    case 'paymentHistory':
+                        await this.loadPaymentHistory();
+                        break;
+                    case 'proofExplorer':
+                        await this.loadProofExplorer();
+                        break;
+                }
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Simulate loading dashboard data
+                    const stats = await this.fetchStats();
+                    
+                    document.getElementById('totalPayments').textContent = stats.totalPayments;
+                    document.getElementById('totalProofs').textContent = stats.totalProofs;
+                    document.getElementById('storageUsed').textContent = `${stats.storageUsed} MB`;
+                    document.getElementById('activeEscrows').textContent = stats.activeEscrows;
+                    
+                } catch (error) {
+                    console.error('❌ Failed to load dashboard data:', error);
+                }
+            }
+
+            async fetchStats() {
+                try {
+                    // In a real app, you would fetch from your backend
+                    // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/stats`);
+                    // if (response.ok) {
+                    //     return await response.json();
+                    // }
+                    
+                    // Mock data for demo
+                    return {
+                        totalPayments: 12,
+                        totalProofs: 10,
+                        storageUsed: 5.2,
+                        activeEscrows: 3
+                    };
+                } catch (error) {
+                    console.error('Failed to fetch stats:', error);
+                    
+                    // Return mock data if API fails
+                    return {
+                        totalPayments: 12,
+                        totalProofs: 10,
+                        storageUsed: 5.2,
+                        activeEscrows: 3
+                    };
+                }
+            }
+
+            async sendPayment() {
+                if (!this.wallet) {
+                    alert('Please connect your wallet first');
+                    return;
+                }
+
+                const recipient = document.getElementById('recipientAddress').value;
+                const amount = document.getElementById('paymentAmount').value;
+                const description = document.getElementById('paymentDescription').value;
+                const useEscrow = document.getElementById('useEscrow').checked;
+
+                if (!recipient || !amount) {
+                    alert('Please fill in recipient address and amount');
+                    return;
+                }
+
+                try {
+                    this.showLoading(true);
+                    
+                    // Step 1: Generate ZK Proof
+                    await this.generateZKProof({
+                        recipient,
+                        amount,
+                        description,
+                        sender: this.wallet[0]
+                    });
+                    
+                    // Step 2: Upload to Walrus
+                    const blobId = await this.uploadToWalrus({
+                        recipient,
+                        amount,
+                        description,
+                        timestamp: Date.now()
+                    });
+                    
+                    // Step 3: Submit to Soundness Layer
+                    const attestationId = await this.submitToSoundnessLayer(blobId);
+                    
+                    // Step 4: Execute payment on Sui
+                    const txResult = await this.executePayment({
+                        recipient,
+                        amount,
+                        blobId,
+                        attestationId,
+                        useEscrow
+                    });
+                    
+                    this.showPaymentSuccess(blobId, attestationId, txResult);
+                    
+                } catch (error) {
+                    console.error('❌ Payment failed:', error);
+                    alert('Payment failed: ' + error.message);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async generateZKProof(paymentData) {
+                console.log('🔐 Generating ZK Proof...');
+                
+                // Show proof generation UI
+                document.getElementById('proofStatus').classList.remove('hidden');
+                document.getElementById('proofMessage').textContent = 'Generating ZK proof...';
+                
+                // Simulate proof generation progress
+                const progressBar = document.getElementById('progressFill');
+                let progress = 0;
+                
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                    }
+                }, 200);
+                
+                try {
+                    // In a real app, you would call your backend
+                    // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/generate-proof`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify(paymentData)
+                    // });
+                    
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to generate proof');
+                    // }
+                    
+                    // const result = await response.json();
+                    
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    const result = {
+                        proofHash: '0x' + Math.random().toString(16).substr(2, 64),
+                        success: true
+                    };
+                    
+                    console.log('✅ ZK Proof generated:', result.proofHash);
+                    
+                    return result;
+                    
+                } catch (error) {
+                    console.error('❌ ZK Proof generation failed:', error);
+                    throw error;
+                }
+            }
+
+            async uploadToWalrus(data) {
+                console.log('🐋 Uploading to Walrus...');
+                
+                document.getElementById('proofMessage').textContent = 'Uploading to Walrus...';
+                
+                try {
+                    // In a real app, you would call your backend
+                    // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/upload-walrus`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify(data)
+                    // });
+                    
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to upload to Walrus');
+                    // }
+                    
+                    // const result = await response.json();
+                    
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    const result = {
+                        blobId: '0x' + Math.random().toString(16).substr(2, 64),
+                        success: true
+                    };
+                    
+                    console.log('✅ Uploaded to Walrus:', result.blobId);
+                    
+                    return result.blobId;
+                    
+                } catch (error) {
+                    console.error('❌ Walrus upload failed:', error);
+                    throw error;
+                }
+            }
+
+            async submitToSoundnessLayer(blobId) {
+                console.log('📜 Submitting to Soundness Layer...');
+                
+                document.getElementById('proofMessage').textContent = 'Submitting to Soundness Layer...';
+                
+                try {
+                    // In a real app, you would call your backend
+                    // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/submit-soundness`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify({
+                    //         blobId,
+                    //         walletAddress: this.wallet[0]
+                    //     })
+                    // });
+                    
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to submit to Soundness Layer');
+                    // }
+                    
+                    // const result = await response.json();
+                    
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    const result = {
+                        attestationId: '0x' + Math.random().toString(16).substr(2, 64),
+                        success: true
+                    };
+                    
+                    console.log('✅ Submitted to Soundness Layer:', result.attestationId);
+                    
+                    return result.attestationId;
+                    
+                } catch (error) {
+                    console.error('❌ Soundness Layer submission failed:', error);
+                    throw error;
+                }
+            }
+
+             async executePayment(paymentData) {
+        console.log('💸 Executing payment on Sui...');
+        
+        document.getElementById('proofMessage').textContent = 'Executing payment...';
+        
+        try {
+            // This would interact with Sui smart contracts
+            // For now, simulate the transaction
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const mockTxResult = {
+                digest: '0x' + Math.random().toString(16).substr(2, 64),
+                status: 'success'
+            };
+            
+            console.log('✅ Payment executed:', mockTxResult.digest);
+            
+            return mockTxResult;
+            
+        } catch (error) {
+            console.error('❌ Payment execution failed:', error);
+            throw error;
+        }
+    }
+
+    showPaymentSuccess(blobId, attestationId, txResult) {
+        document.getElementById('proofMessage').textContent = 'Payment completed successfully!';
+        document.getElementById('proofResult').classList.remove('hidden');
+        document.getElementById('blobId').textContent = blobId;
+        document.getElementById('attestationId').textContent = attestationId;
+        
+        // Clear form
+        document.getElementById('recipientAddress').value = '';
+        document.getElementById('paymentAmount').value = '';
+        document.getElementById('paymentDescription').value = '';
+        
+        // Refresh dashboard
+        this.loadDashboardData();
+    }
+
+    shareProofOnTwitter() {
+        const blobId = document.getElementById('blobId').textContent;
+        const attestationId = document.getElementById('attestationId').textContent;
+        
+        const tweetText = `🎉 Just completed a private payment using @SoundnessLabs! 
+        
+🔐 ZK Proof verified
+🐋 Data stored on @WalrusProtocol  
+⚡ Powered by @SuiNetwork
+
+Blob ID: ${blobId.slice(0, 10)}...
+Attestation: ${attestationId.slice(0, 10)}...
+
+#SoundPay #ZKProofs #Web3 #Privacy`;
+        
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+        window.open(tweetUrl, '_blank');
+    }
+
+    async loadPaymentHistory() {
+        if (!this.wallet) return;
+        
+        try {
+            // In a real app, you would fetch from your backend
+            // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/payments/${this.wallet[0]}`);
+            // if (response.ok) {
+            //     this.payments = await response.json();
+            // } else {
+            //     // Mock data for demo
+            //     this.payments = this.generateMockPayments();
+            // }
+            
+            // Use mock data for demo
+            this.payments = this.generateMockPayments();
+            this.renderPaymentHistory();
+            
+        } catch (error) {
+            console.error('Failed to load payment history:', error);
+            this.payments = this.generateMockPayments();
+            this.renderPaymentHistory();
+        }
+    }
+
+    generateMockPayments() {
+        return [
+            {
+                id: '1',
+                amount: '0.5',
+                recipient: '0x1234...5678',
+                status: 'completed',
+                timestamp: Date.now() - 86400000,
+                blobId: '0xabcd...efgh',
+                description: 'Payment for services'
+            },
+            {
+                id: '2',
+                amount: '1.2',
+                recipient: '0x9876...5432',
+                status: 'pending',
+                timestamp: Date.now() - 3600000,
+                blobId: '0xijkl...mnop',
+                description: 'Freelance work payment'
+            },
+            {
+                id: '3',
+                amount: '0.8',
+                recipient: '0x5555...7777',
+                status: 'disputed',
+                timestamp: Date.now() - 172800000,
+                blobId: '0xqrst...uvwx',
+                description: 'Product purchase'
+            }
+        ];
+    }
+
+    renderPaymentHistory() {
+        const paymentList = document.getElementById('paymentList');
+        paymentList.innerHTML = '';
+        
+        this.payments.forEach(payment => {
+            const paymentItem = document.createElement('div');
+            paymentItem.className = 'payment-item';
+            paymentItem.innerHTML = `
+                <div class="payment-header">
+                    <div class="payment-amount">${payment.amount} SUI</div>
+                    <div class="payment-status status-${payment.status}">${payment.status}</div>
+                </div>
+                <div class="payment-details">
+                    <p><strong>To:</strong> ${payment.recipient}</p>
+                    <p><strong>Description:</strong> ${payment.description}</p>
+                    <p><strong>Date:</strong> ${new Date(payment.timestamp).toLocaleDateString()}</p>
+                    <p><strong>Blob ID:</strong> ${payment.blobId}</p>
+                </div>
+            `;
+            paymentList.appendChild(paymentItem);
+        });
+    }
+
+    filterPayments(filter) {
+        const items = document.querySelectorAll('.payment-item');
+        items.forEach(item => {
+            const status = item.querySelector('.payment-status').textContent.toLowerCase();
+            if (filter === 'all' || status === filter) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    async searchProof() {
+        const searchTerm = document.getElementById('searchProof').value;
+        if (!searchTerm) return;
+        
+        try {
+            // In a real app, you would fetch from your backend
+            // const response = await fetch(`${CONFIG.SOUNDNESS_API_URL}/proof/${searchTerm}`);
+            // if (response.ok) {
+            //     const proofData = await response.json();
+            //     this.displayProofDetails(proofData);
+            // } else {
+            //     alert('Proof not found');
+            // }
+            
+            // Mock response for demo
+            const proofData = {
+                blobId: searchTerm,
+                attestationId: '0x' + Math.random().toString(16).substr(2, 64),
+                status: 'verified',
+                timestamp: Date.now() - 86400000,
+                size: '2.4 KB'
+            };
+            
+            this.displayProofDetails(proofData);
+            
+        } catch (error) {
+            console.error('Search failed:', error);
+            alert('Search failed');
+        }
+    }
+
+    displayProofDetails(proofData) {
+        const proofDetails = document.getElementById('proofDetails');
+        proofDetails.innerHTML = `
+            <h3>Proof Details</h3>
+            <div class="proof-info">
+                <p><strong>Blob ID:</strong> ${proofData.blobId}</p>
+                <p><strong>Attestation ID:</strong> ${proofData.attestationId}</p>
+                <p><strong>Status:</strong> <span class="status-${proofData.status}">${proofData.status}</span></p>
+                <p><strong>Created:</strong> ${new Date(proofData.timestamp).toLocaleString()}</p>
+                <p><strong>Size:</strong> ${proofData.size}</p>
+            </div>
+        `;
+        proofDetails.classList.remove('hidden');
+    }
+
+    async loadProofExplorer() {
+        // Load recent proofs for explorer
+        console.log('Loading proof explorer...');
+    }
+
+    async loadUserData() {
+        if (!this.wallet) return;
+        
+        // Load user-specific data
+        await this.loadPaymentHistory();
+        await this.loadDashboardData();
+    }
+
+    showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
+    }
+}
+
+// Initialize app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.soundPayApp = new SoundPayApp();
+    
+    // Debug function to check wallet detection
+    window.debugWalletDetection = async function() {
+        console.log('=== DEBUG WALLET DETECTION ===');
+        console.log('window.suiWallet:', typeof window.suiWallet !== 'undefined' ? 'EXISTS' : 'UNDEFINED');
+        console.log('window.sui:', typeof window.sui !== 'undefined' ? 'EXISTS' : 'UNDEFINED');
+        console.log('window.martian:', typeof window.martian !== 'undefined' ? 'EXISTS' : 'UNDEFINED');
+        console.log('window.ethereum:', typeof window.ethereum !== 'undefined' ? 'EXISTS' : 'UNDEFINED');
+        
+        if (typeof window.ethereum !== 'undefined') {
+            console.log('Ethereum chainId:', await window.ethereum.request({ method: 'eth_chainId' }));
+            console.log('Ethereum accounts:', await window.ethereum.request({ method: 'eth_accounts' }));
+        }
+        
+        const wallets = await window.soundPayApp.checkAvailableWallets();
+        console.log('Detected wallets:', wallets);
+    };
+    
+    // Auto-check for wallets every 2 seconds for the first 10 seconds
+    let checkCount = 0;
+    const checkInterval = setInterval(async () => {
+        if (checkCount >= 5) {
+            clearInterval(checkInterval);
+            return;
+        }
+        
+        const wallets = await window.soundPayApp.checkAvailableWallets();
+        if (wallets.length > 0 && !window.soundPayApp.wallet) {
+            console.log('Wallet detected, attempting to connect...');
+            window.soundPayApp.connectWallet();
+        }
+        
+        checkCount++;
+    }, 2000);
+});
+</script>
 </body>
 </html>

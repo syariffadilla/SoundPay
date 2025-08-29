@@ -1,12 +1,12 @@
 // Soundness Layer Configuration
 const CONFIG = {
     // Sui Network Configuration
-    SUI_NETWORK: 'testnet', // or 'devnet'
+    SUI_NETWORK: 'testnet',
     SUI_RPC_URL: 'https://fullnode.testnet.sui.io:443',
     
     // Soundness Layer Configuration
     SOUNDNESS_API_URL: 'http://localhost:3001/api',
-    SOUNDNESS_CLI_PATH: '../soundness-cli', // Path to soundness-cli
+    SOUNDNESS_CLI_PATH: './soundness-cli',
     
     // Walrus Configuration
     WALRUS_PUBLISHER_URL: 'https://publisher.walrus-testnet.walrus.space',
@@ -14,8 +14,8 @@ const CONFIG = {
     
     // Contract Addresses (will be updated after deployment)
     CONTRACTS: {
-        SOUNDPAY_ESCROW: '0x...', // Will be set after deployment
-        SOUNDPAY_TOKEN: '0x...'   // Will be set after deployment
+        SOUNDPAY_ESCROW: '0x...',
+        SOUNDPAY_TOKEN: '0x...'
     },
     
     // ZK Proof Configuration
@@ -28,7 +28,7 @@ const CONFIG = {
     // UI Configuration
     UI: {
         ITEMS_PER_PAGE: 10,
-        REFRESH_INTERVAL: 30000, // 30 seconds
+        REFRESH_INTERVAL: 30000,
         ANIMATION_DURATION: 300
     }
 };
